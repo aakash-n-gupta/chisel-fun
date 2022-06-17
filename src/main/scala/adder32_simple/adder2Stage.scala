@@ -39,13 +39,14 @@ class adder2Stage extends Module{
     adder1.io.carry_in := pipeline_cout0
 
     val sum1 = adder1.io.sum 
-    // val carry_out1 = adder1.io.carry_out
-    io.out_carry := adder1.io.carry_out
+    val carry_out1 = adder1.io.carry_out
 
     out_reg := sum0; // delay the adder0 result for 1 cycle to give 32bit output after 2 cycles
 
     io.out_sum := Cat(sum1, out_reg)
-    // io.out_carry := carry_out1
+    io.out_carry := carry_out1
+
+
 
 }
 
