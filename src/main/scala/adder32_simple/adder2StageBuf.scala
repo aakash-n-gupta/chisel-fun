@@ -20,6 +20,8 @@ class adder2Stage extends Module{
     val pipeline_reg_b = RegInit(UInt(16.W), 0.U) // for the MSB bits to be processed in stage 2
     val pipeline_cout0 = RegInit(UInt(1.W), 0.U) // for carryout of adder0
 
+    // creating input and output buffer regs for IO
+
     val adder0 = Module(new adderGenerator(16))
     adder0.io.in_a := io.in_a(15, 0)
     adder0.io.in_b := io.in_b(15, 0)
@@ -56,6 +58,3 @@ class adder2Stage extends Module{
 object VerilogMain extends App{
     (new ChiselStage).emitVerilog(new adder2Stage)
 }
-    
-
-
