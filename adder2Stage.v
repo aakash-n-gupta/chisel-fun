@@ -24,20 +24,22 @@ module adder2Stage(
   reg [31:0] _RAND_0;
   reg [31:0] _RAND_1;
   reg [31:0] _RAND_2;
+  reg [31:0] _RAND_3;
 `endif // RANDOMIZE_REG_INIT
   wire [15:0] adder0_io_in_a; // @[adder2Stage.scala 23:24]
   wire [15:0] adder0_io_in_b; // @[adder2Stage.scala 23:24]
   wire  adder0_io_carry_in; // @[adder2Stage.scala 23:24]
   wire [15:0] adder0_io_sum; // @[adder2Stage.scala 23:24]
   wire  adder0_io_carry_out; // @[adder2Stage.scala 23:24]
-  wire [15:0] adder1_io_in_a; // @[adder2Stage.scala 41:24]
-  wire [15:0] adder1_io_in_b; // @[adder2Stage.scala 41:24]
-  wire  adder1_io_carry_in; // @[adder2Stage.scala 41:24]
-  wire [15:0] adder1_io_sum; // @[adder2Stage.scala 41:24]
-  wire  adder1_io_carry_out; // @[adder2Stage.scala 41:24]
+  wire [15:0] adder1_io_in_a; // @[adder2Stage.scala 42:24]
+  wire [15:0] adder1_io_in_b; // @[adder2Stage.scala 42:24]
+  wire  adder1_io_carry_in; // @[adder2Stage.scala 42:24]
+  wire [15:0] adder1_io_sum; // @[adder2Stage.scala 42:24]
+  wire  adder1_io_carry_out; // @[adder2Stage.scala 42:24]
   reg [15:0] pipeline_reg_a; // @[adder2Stage.scala 19:33]
   reg [15:0] pipeline_reg_b; // @[adder2Stage.scala 20:33]
   reg  pipeline_cout0; // @[adder2Stage.scala 21:33]
+  reg [15:0] pipeline_reg_sum0; // @[adder2Stage.scala 38:36]
   adderGenerator adder0 ( // @[adder2Stage.scala 23:24]
     .io_in_a(adder0_io_in_a),
     .io_in_b(adder0_io_in_b),
@@ -45,21 +47,21 @@ module adder2Stage(
     .io_sum(adder0_io_sum),
     .io_carry_out(adder0_io_carry_out)
   );
-  adderGenerator adder1 ( // @[adder2Stage.scala 41:24]
+  adderGenerator adder1 ( // @[adder2Stage.scala 42:24]
     .io_in_a(adder1_io_in_a),
     .io_in_b(adder1_io_in_b),
     .io_carry_in(adder1_io_carry_in),
     .io_sum(adder1_io_sum),
     .io_carry_out(adder1_io_carry_out)
   );
-  assign io_out_sum = {adder1_io_sum,16'h0}; // @[Cat.scala 31:58]
-  assign io_out_carry = adder1_io_carry_out; // @[adder2Stage.scala 52:18]
+  assign io_out_sum = {adder1_io_sum,pipeline_reg_sum0}; // @[Cat.scala 31:58]
+  assign io_out_carry = adder1_io_carry_out; // @[adder2Stage.scala 53:18]
   assign adder0_io_in_a = io_in_a[15:0]; // @[adder2Stage.scala 24:30]
   assign adder0_io_in_b = io_in_b[15:0]; // @[adder2Stage.scala 25:30]
   assign adder0_io_carry_in = 1'h0; // @[adder2Stage.scala 26:24]
-  assign adder1_io_in_a = pipeline_reg_a; // @[adder2Stage.scala 42:20]
-  assign adder1_io_in_b = pipeline_reg_b; // @[adder2Stage.scala 43:20]
-  assign adder1_io_carry_in = pipeline_cout0; // @[adder2Stage.scala 44:24]
+  assign adder1_io_in_a = pipeline_reg_a; // @[adder2Stage.scala 43:20]
+  assign adder1_io_in_b = pipeline_reg_b; // @[adder2Stage.scala 44:20]
+  assign adder1_io_carry_in = pipeline_cout0; // @[adder2Stage.scala 45:24]
   always @(posedge clock) begin
     if (reset) begin // @[adder2Stage.scala 19:33]
       pipeline_reg_a <= 16'h0; // @[adder2Stage.scala 19:33]
@@ -75,6 +77,11 @@ module adder2Stage(
       pipeline_cout0 <= 1'h0; // @[adder2Stage.scala 21:33]
     end else begin
       pipeline_cout0 <= adder0_io_carry_out; // @[adder2Stage.scala 33:20]
+    end
+    if (reset) begin // @[adder2Stage.scala 38:36]
+      pipeline_reg_sum0 <= 16'h0; // @[adder2Stage.scala 38:36]
+    end else begin
+      pipeline_reg_sum0 <= adder0_io_sum; // @[adder2Stage.scala 39:23]
     end
   end
 // Register and memory initialization
@@ -119,6 +126,8 @@ initial begin
   pipeline_reg_b = _RAND_1[15:0];
   _RAND_2 = {1{`RANDOM}};
   pipeline_cout0 = _RAND_2[0:0];
+  _RAND_3 = {1{`RANDOM}};
+  pipeline_reg_sum0 = _RAND_3[15:0];
 `endif // RANDOMIZE_REG_INIT
   `endif // RANDOMIZE
 end // initial

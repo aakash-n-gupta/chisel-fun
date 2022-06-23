@@ -53,13 +53,14 @@ circuit adder2Stage :
     pipeline_cout0 <= adder0.io.carry_out @[adder2Stage.scala 33:20]
     reg pipeline_reg_sum0 : UInt<16>, clock with :
       reset => (reset, UInt<1>("h0")) @[adder2Stage.scala 38:36]
-    inst adder1 of adderGenerator_1 @[adder2Stage.scala 41:24]
+    pipeline_reg_sum0 <= adder0.io.sum @[adder2Stage.scala 39:23]
+    inst adder1 of adderGenerator_1 @[adder2Stage.scala 42:24]
     adder1.clock <= clock
     adder1.reset <= reset
-    adder1.io.in_a <= pipeline_reg_a @[adder2Stage.scala 42:20]
-    adder1.io.in_b <= pipeline_reg_b @[adder2Stage.scala 43:20]
-    adder1.io.carry_in <= pipeline_cout0 @[adder2Stage.scala 44:24]
+    adder1.io.in_a <= pipeline_reg_a @[adder2Stage.scala 43:20]
+    adder1.io.in_b <= pipeline_reg_b @[adder2Stage.scala 44:20]
+    adder1.io.carry_in <= pipeline_cout0 @[adder2Stage.scala 45:24]
     node _io_out_sum_T = cat(adder1.io.sum, pipeline_reg_sum0) @[Cat.scala 31:58]
-    io.out_sum <= _io_out_sum_T @[adder2Stage.scala 51:16]
-    io.out_carry <= adder1.io.carry_out @[adder2Stage.scala 52:18]
+    io.out_sum <= _io_out_sum_T @[adder2Stage.scala 52:16]
+    io.out_carry <= adder1.io.carry_out @[adder2Stage.scala 53:18]
 
