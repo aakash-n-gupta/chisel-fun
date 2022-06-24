@@ -1,4 +1,4 @@
-package adder2Stage
+package adder2StageScala
 
 import chisel3._
 import chisel3.util._
@@ -6,7 +6,7 @@ import chisel3.stage.ChiselStage
 
 import adderGenerator._
 
-class adder2Stage extends Module{
+class adder2StageScala extends Module{
     val io = IO(new Bundle {
         val in_a = Input(UInt(32.W))
         val in_b = Input(UInt(32.W))
@@ -61,5 +61,5 @@ class adder2Stage extends Module{
 }
 
 object VerilogMain extends App{
-    (new ChiselStage).emitVerilog(new adder2Stage)
+    (new ChiselStage).emitVerilog(new adder2StageScala)
 }
