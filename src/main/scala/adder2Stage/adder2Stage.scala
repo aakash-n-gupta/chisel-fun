@@ -20,6 +20,9 @@ class adder2Stage extends Module{
     val pipeline_reg_b = RegInit(UInt(16.W), 0.U) // for the MSB bits to be processed in stage 2
     val pipeline_cout0 = RegInit(UInt(1.W), 0.U) // for carryout of adder0
 
+    val buffer_out_sum = RegInit(UInt(32.W), 0.U)   // buffer registers for the output
+    val buffer_out_carry = RegInit(UInt(1.W), 0.U)   // buffer registers for the output
+
     val adder0 = Module(new adderGenerator(16))
     adder0.io.in_a := io.in_a(15, 0)
     adder0.io.in_b := io.in_b(15, 0)
@@ -49,8 +52,11 @@ class adder2Stage extends Module{
 
     // out_reg := sum0; // delay the adder0 result for 1 cycle to give entire 32bit output after 2 cycles
 
-    io.out_sum := Cat(sum1, pipeline_reg_sum0)
-    io.out_carry := carry_out1
+    buffer_out_sum := Cat(sum1, pipeline_reg_sum0)
+    buffer_out_carry := carry_out1
+
+    io.out_sum := buffer_out_sum
+    io.out_carry := buffer_out_carry
 
 }
 

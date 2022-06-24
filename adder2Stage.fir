@@ -30,37 +30,41 @@ circuit adder2Stage :
     input reset : UInt<1>
     output io : { flip in_a : UInt<32>, flip in_b : UInt<32>, out_sum : UInt<32>, out_carry : UInt<1>}
 
-    reg out_reg : UInt<16>, clock with :
-      reset => (reset, UInt<1>("h0")) @[adder2Stage.scala 18:26]
     reg pipeline_reg_a : UInt<16>, clock with :
       reset => (reset, UInt<1>("h0")) @[adder2Stage.scala 19:33]
     reg pipeline_reg_b : UInt<16>, clock with :
       reset => (reset, UInt<1>("h0")) @[adder2Stage.scala 20:33]
     reg pipeline_cout0 : UInt<1>, clock with :
       reset => (reset, UInt<1>("h0")) @[adder2Stage.scala 21:33]
-    inst adder0 of adderGenerator @[adder2Stage.scala 23:24]
+    reg buffer_out_sum : UInt<32>, clock with :
+      reset => (reset, UInt<1>("h0")) @[adder2Stage.scala 23:33]
+    reg buffer_out_carry : UInt<1>, clock with :
+      reset => (reset, UInt<1>("h0")) @[adder2Stage.scala 24:35]
+    inst adder0 of adderGenerator @[adder2Stage.scala 26:24]
     adder0.clock <= clock
     adder0.reset <= reset
-    node _adder0_io_in_a_T = bits(io.in_a, 15, 0) @[adder2Stage.scala 24:30]
-    adder0.io.in_a <= _adder0_io_in_a_T @[adder2Stage.scala 24:20]
-    node _adder0_io_in_b_T = bits(io.in_b, 15, 0) @[adder2Stage.scala 25:30]
-    adder0.io.in_b <= _adder0_io_in_b_T @[adder2Stage.scala 25:20]
-    adder0.io.carry_in <= UInt<1>("h0") @[adder2Stage.scala 26:24]
-    node _pipeline_reg_a_T = bits(io.in_a, 31, 16) @[adder2Stage.scala 31:30]
-    pipeline_reg_a <= _pipeline_reg_a_T @[adder2Stage.scala 31:20]
-    node _pipeline_reg_b_T = bits(io.in_b, 31, 16) @[adder2Stage.scala 32:30]
-    pipeline_reg_b <= _pipeline_reg_b_T @[adder2Stage.scala 32:20]
-    pipeline_cout0 <= adder0.io.carry_out @[adder2Stage.scala 33:20]
+    node _adder0_io_in_a_T = bits(io.in_a, 15, 0) @[adder2Stage.scala 27:30]
+    adder0.io.in_a <= _adder0_io_in_a_T @[adder2Stage.scala 27:20]
+    node _adder0_io_in_b_T = bits(io.in_b, 15, 0) @[adder2Stage.scala 28:30]
+    adder0.io.in_b <= _adder0_io_in_b_T @[adder2Stage.scala 28:20]
+    adder0.io.carry_in <= UInt<1>("h0") @[adder2Stage.scala 29:24]
+    node _pipeline_reg_a_T = bits(io.in_a, 31, 16) @[adder2Stage.scala 34:30]
+    pipeline_reg_a <= _pipeline_reg_a_T @[adder2Stage.scala 34:20]
+    node _pipeline_reg_b_T = bits(io.in_b, 31, 16) @[adder2Stage.scala 35:30]
+    pipeline_reg_b <= _pipeline_reg_b_T @[adder2Stage.scala 35:20]
+    pipeline_cout0 <= adder0.io.carry_out @[adder2Stage.scala 36:20]
     reg pipeline_reg_sum0 : UInt<16>, clock with :
-      reset => (reset, UInt<1>("h0")) @[adder2Stage.scala 38:36]
-    pipeline_reg_sum0 <= adder0.io.sum @[adder2Stage.scala 39:23]
-    inst adder1 of adderGenerator_1 @[adder2Stage.scala 42:24]
+      reset => (reset, UInt<1>("h0")) @[adder2Stage.scala 41:36]
+    pipeline_reg_sum0 <= adder0.io.sum @[adder2Stage.scala 42:23]
+    inst adder1 of adderGenerator_1 @[adder2Stage.scala 45:24]
     adder1.clock <= clock
     adder1.reset <= reset
-    adder1.io.in_a <= pipeline_reg_a @[adder2Stage.scala 43:20]
-    adder1.io.in_b <= pipeline_reg_b @[adder2Stage.scala 44:20]
-    adder1.io.carry_in <= pipeline_cout0 @[adder2Stage.scala 45:24]
-    node _io_out_sum_T = cat(adder1.io.sum, pipeline_reg_sum0) @[Cat.scala 31:58]
-    io.out_sum <= _io_out_sum_T @[adder2Stage.scala 52:16]
-    io.out_carry <= adder1.io.carry_out @[adder2Stage.scala 53:18]
+    adder1.io.in_a <= pipeline_reg_a @[adder2Stage.scala 46:20]
+    adder1.io.in_b <= pipeline_reg_b @[adder2Stage.scala 47:20]
+    adder1.io.carry_in <= pipeline_cout0 @[adder2Stage.scala 48:24]
+    node _buffer_out_sum_T = cat(adder1.io.sum, pipeline_reg_sum0) @[Cat.scala 31:58]
+    buffer_out_sum <= _buffer_out_sum_T @[adder2Stage.scala 55:20]
+    buffer_out_carry <= adder1.io.carry_out @[adder2Stage.scala 56:22]
+    io.out_sum <= buffer_out_sum @[adder2Stage.scala 58:16]
+    io.out_carry <= buffer_out_carry @[adder2Stage.scala 59:18]
 
